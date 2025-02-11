@@ -1,4 +1,5 @@
 import React from 'react';
+import { Calendar, Clock } from 'lucide-react';
 
 const TaskCard = ({ 
   task, 
@@ -30,18 +31,36 @@ const TaskCard = ({
     }
   };
 
+  const getDueDateColor = () => {
+    const days = daysUntilDue();
+    if (days < 0) return 'text-red-600';
+    if (days <= 3) return 'text-yellow-600';
+    return 'text-gray-600';
+  };
+
   return (
-    <div className={`rounded-lg border p-4 shadow-sm ${getStatusColor()} transition-all`}>
+    <div 
+      className={`rounded-lg border p-4 shadow-sm ${getStatusColor()} 
+        transition-all duration-300 hover:shadow-md transform hover:-translate-y-1`}
+    >
       <div className="flex justify-between items-start gap-4">
         <div className="flex-1">
-          <h3 className="text-lg font-semibold mb-2 text-gray-800">{task.title}</h3>
-          <p className="text-gray-600 mb-3">{task.description}</p>
+          <h3 className="text-lg font-semibold mb-2 text-gray-800">
+            {task.title}
+          </h3>
+          <p className="text-gray-600 mb-3">
+            {task.description}
+          </p>
           
           <div className="flex items-center gap-4 mb-3">
-            <span className="text-sm text-gray-600">
-              Due: {new Date(task.dueDate).toLocaleDateString()}
-            </span>
-            <span className={`px-2 py-1 rounded-full text-sm ${getStatusBadgeColor()}`}>
+            <div className={`flex items-center gap-1 ${getDueDateColor()}`}>
+              <Calendar className="w-4 h-4" />
+              <span className="text-sm">
+                Due: {new Date(task.dueDate).toLocaleDateString()}
+              </span>
+            </div>
+            <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusBadgeColor()} 
+              transition-colors duration-300`}>
               {task.status}
             </span>
           </div>
@@ -49,7 +68,9 @@ const TaskCard = ({
           <select
             value={task.status}
             onChange={(e) => onStatusChange(task.id, e.target.value)}
-            className="border border-gray-300 rounded-lg p-1.5 text-sm text-gray-600 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="border border-gray-300 rounded-lg p-1.5 text-sm text-gray-600 
+              bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+              transition-all duration-300"
           >
             <option value="not started">Not Started</option>
             <option value="in progress">In Progress</option>
