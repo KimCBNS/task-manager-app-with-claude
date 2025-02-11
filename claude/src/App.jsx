@@ -1,34 +1,59 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import TaskCard from './components/TaskCard'
+import TaskForm from './components/TaskForm'
+import CompletedTasks from './components/CompletedTasks'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [tasks, setTasks] = useState([
+    {
+      id: 1,
+      title: "Test Task",
+      description: "This is a test task to verify our component",
+      dueDate: "2025-02-14",
+      status: "not started"
+    }
+  ]);
+
+  const handleAddTask = (newTask) => {
+    setTasks(prev => [...prev, newTask]);
+  };
+
+  const handleStatusChange = (taskId, newStatus) => {
+    setTasks(tasks.map(task => 
+      task.id === taskId ? { ...task, status: newStatus } : task
+    ));
+  };
+
+  // Separate active and completed tasks
+  const activeTasks = tasks.filter(task => task.status !== 'complete');
+  const completedTasks = tasks.filter(task => task.status === 'complete');
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="container mx-auto p-4 max-w-3xl">
+      <h1 className="text-2xl font-bold mb-6">Task Manager</h1>
+      
+      <TaskForm onAddTask={handleAddTask} />
+      
+      <div className="space-y-4">
+        <h2 className="text-xl font-semibold mb-4 text-gray-700">
+          Active Tasks ({activeTasks.length})
+        </h2>
+        {activeTasks.map(task => (
+          <TaskCard 
+            key={task.id}
+            task={task}
+            onStatusChange={handleStatusChange}
+          />
+        ))}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+
+      {completedTasks.length > 0 && (
+        <CompletedTasks 
+          tasks={completedTasks}
+          onStatusChange={handleStatusChange}
+        />
+      )}
+    </div>
   )
 }
 
